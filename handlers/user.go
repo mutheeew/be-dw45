@@ -38,7 +38,7 @@ func (h *handler) GetUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: convertResponse(user)})
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: user})
 }
 
 func (h *handler) CreateUser(c echo.Context) error {
@@ -69,7 +69,7 @@ func (h *handler) CreateUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: convertResponse(data)})
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: data})
 }
 
 func (h *handler) UpdateUser(c echo.Context) error {
@@ -112,6 +112,11 @@ func (h *handler) UpdateUser(c echo.Context) error {
 	if request.Address != "" {
 		user.Address = request.Address
 	}
+	if request.Subscribe != false {
+		user.Subscribe = request.Subscribe
+	} else if request.Subscribe == true {
+		user.Subscribe = request.Subscribe
+	}
 
 	data, err := h.UserRepository.UpdateUser(user)
 	if err != nil {
@@ -139,10 +144,11 @@ func (h *handler) DeleteUser(c echo.Context) error {
 
 func convertResponse(u models.User) usersdto.UserResponse {
 	return usersdto.UserResponse{
-		ID:       u.ID,
-		Fullname: u.Fullname,
-		Email:    u.Email,
-		Password: u.Password,
+		ID:        u.ID,
+		Fullname:  u.Fullname,
+		Email:     u.Email,
+		Password:  u.Password,
+		Subscribe: u.Subscribe,
 	}
 }
 func convertDeleteResponse(u models.User) usersdto.UserDeleteResponse {

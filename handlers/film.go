@@ -48,10 +48,6 @@ func (h *handlerFilm) GetFilm(c echo.Context) error {
 }
 
 func (h *handlerFilm) CreateFilm(c echo.Context) error {
-	// request := new(filmdto.CreateFilmRequest)
-	// if err := c.Bind(request); err != nil {
-	// 	return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
-	// }
 	dataFile := c.Get("dataFile").(string)
 	fmt.Println("this is data file", dataFile)
 
@@ -64,6 +60,7 @@ func (h *handlerFilm) CreateFilm(c echo.Context) error {
 		Year:          year,
 		CategoryID:    category_id,
 		Description:   c.FormValue("description"),
+		LinkFilm:      c.FormValue("link"),
 	}
 
 	validation := validator.New()
@@ -80,6 +77,7 @@ func (h *handlerFilm) CreateFilm(c echo.Context) error {
 		Category:      request.Category,
 		CategoryID:    request.CategoryID,
 		Description:   request.Description,
+		LinkFilm:      request.LinkFilm,
 	}
 
 	data, err := h.FilmRepository.CreateFilm(films)
@@ -110,10 +108,6 @@ func (h *handlerFilm) UpdateFilm(c echo.Context) error {
 	if request.Title != "" {
 		film.Title = request.Title
 	}
-
-	if request.ThumbnailFilm != "" {
-		film.ThumbnailFilm = request.ThumbnailFilm
-	}
 	if request.ThumbnailFilm != "" {
 		film.ThumbnailFilm = request.ThumbnailFilm
 	}
@@ -125,6 +119,9 @@ func (h *handlerFilm) UpdateFilm(c echo.Context) error {
 	}
 	if request.Description != "" {
 		film.Description = request.Description
+	}
+	if request.LinkFilm != "" {
+		film.Description = request.LinkFilm
 	}
 
 	data, err := h.FilmRepository.UpdateFilm(film)
@@ -160,6 +157,7 @@ func convertFilmResponse(u models.Film) filmdto.CreateFilmResponse {
 		Category:      u.Category,
 		CategoryID:    u.CategoryID,
 		Description:   u.Description,
+		LinkFilm:      u.LinkFilm,
 	}
 }
 

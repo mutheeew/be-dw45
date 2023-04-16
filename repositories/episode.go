@@ -2,13 +2,16 @@ package repositories
 
 import (
 	"dumbmerch/models"
+	"fmt"
 
 	"gorm.io/gorm"
 )
 
 type EpisodeRepository interface {
 	FindEpisode() ([]models.Episode, error)
+	FindEpisodeByFilm(ID int) ([]models.Episode, error)
 	GetEpisode(ID int) (models.Episode, error)
+	GetEpisodeByFilm(ID int, IDE int) (models.Episode, error)
 	CreateEpisode(Episode models.Episode) (models.Episode, error)
 	UpdateEpisode(Episode models.Episode) (models.Episode, error)
 	DeleteEpisode(Episode models.Episode, ID int) (models.Episode, error)
@@ -24,10 +27,22 @@ func (r *repository) FindEpisode() ([]models.Episode, error) {
 
 	return Episode, err
 }
+func (r *repository) FindEpisodeByFilm(ID int) ([]models.Episode, error) {
+	var Episode []models.Episode
+	err := r.db.Preload("Film.Category").Find(&Episode, "film_id = ?", ID).Error
+	fmt.Println(ID)
+	return Episode, err
+}
 
 func (r *repository) GetEpisode(ID int) (models.Episode, error) {
 	var Episode models.Episode
 	err := r.db.Preload("Film").First(&Episode, ID).Error
+
+	return Episode, err
+}
+func (r *repository) GetEpisodeByFilm(ID int, IDE int) (models.Episode, error) {
+	var Episode models.Episode
+	err := r.db.Preload("Film").First(&Episode, "film_id = ? AND id = ?", ID, IDE).Error
 
 	return Episode, err
 }

@@ -5,12 +5,15 @@ import (
 	dto "dumbmerch/dto/result"
 	"dumbmerch/models"
 	"dumbmerch/repositories"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
+
+var path_file2 = "http://localhost:5000/uploads/"
 
 type handlerEpisode struct {
 	EpisodeRepository repositories.EpisodeRepository
@@ -25,7 +28,21 @@ func (h *handlerEpisode) FindEpisode(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
 	}
+	for i, p := range Episode {
+		Episode[i].ThumbnailFilm = path_file + p.ThumbnailFilm
+	}
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: Episode})
+}
 
+func (h *handlerEpisode) FindEpisodeByFilm(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	Episode, err := h.EpisodeRepository.FindEpisodeByFilm(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+	for i, p := range Episode {
+		Episode[i].ThumbnailFilm = path_file + p.ThumbnailFilm
+	}
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: Episode})
 }
 
@@ -36,14 +53,38 @@ func (h *handlerEpisode) GetEpisode(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
 	}
+	Episode.ThumbnailFilm = path_file + Episode.ThumbnailFilm
+	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: Episode})
+}
+func (h *handlerEpisode) GetEpisodeByFilm(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	ide, _ := strconv.Atoi(c.Param("ide"))
 
+	Episode, err := h.EpisodeRepository.GetEpisodeByFilm(id, ide)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	}
+	Episode.ThumbnailFilm = path_file + Episode.ThumbnailFilm
 	return c.JSON(http.StatusOK, dto.SuccessResult{Code: http.StatusOK, Data: Episode})
 }
 
 func (h *handlerEpisode) CreateEpisode(c echo.Context) error {
-	request := new(episodedto.EpisodeRequest)
-	if err := c.Bind(request); err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	// request := new(episodedto.EpisodeRequest)
+	// if err := c.Bind(request); err != nil {
+	// 	return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	// }
+	dataFile := c.Get("dataFile").(string)
+	fmt.Println("this is data file", dataFile)
+
+	year, _ := strconv.Atoi(c.FormValue("year"))
+	film_id, _ := strconv.Atoi(c.FormValue("film_id"))
+
+	request := episodedto.EpisodeRequest{
+		Title:         c.FormValue("title"),
+		ThumbnailFilm: dataFile,
+		LinkFilm:      c.FormValue("linkfilm"),
+		Year:          year,
+		FilmID:        film_id,
 	}
 
 	validation := validator.New()

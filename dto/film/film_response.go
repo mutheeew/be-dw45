@@ -10,6 +10,7 @@ type CreateFilmResponse struct {
 	Category      models.Category `json:"category" `
 	CategoryID    int             `json:"category_id"`
 	Description   string          `json:"description" form:"description" gorm:"type:text"`
+	LinkFilm      string          `json: "link" from:"link" gorm:"type:text"`
 }
 
 type FilmDeleteResponse struct {

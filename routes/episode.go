@@ -14,8 +14,10 @@ func EpisodeRoutes(e *echo.Group) {
 	h := handlers.HandlerEpisode(EpisodeRepository)
 
 	e.GET("/episodes", h.FindEpisode)
+	e.GET("/film/:id/episode", h.FindEpisodeByFilm)
+	e.GET("/film/:id/episode/:ide", h.GetEpisodeByFilm)
 	e.GET("/episode/:id", h.GetEpisode)
-	e.POST("/episode", middleware.Auth(h.CreateEpisode))
+	e.POST("/episode", middleware.Auth(middleware.UploadFile(h.CreateEpisode)))
 	e.DELETE("/episode/:id", middleware.Auth(h.DeleteEpisode))
 	e.PATCH("/episode/:id", middleware.Auth(h.UpdateEpisode))
 	// }

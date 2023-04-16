@@ -40,7 +40,6 @@ func (r *repository) CreateFilm(film models.Film) (models.Film, error) {
 
 func (r *repository) UpdateFilm(film models.Film) (models.Film, error) {
 	err := r.db.Save(&film).Error
-
 	return film, err
 }
 
