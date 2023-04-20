@@ -101,9 +101,9 @@ func (h *handlerFilm) UpdateFilm(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
 	}
 
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
-	}
+	// if err != nil {
+	// 	return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()})
+	// }
 
 	if request.Title != "" {
 		film.Title = request.Title
@@ -121,7 +121,7 @@ func (h *handlerFilm) UpdateFilm(c echo.Context) error {
 		film.Description = request.Description
 	}
 	if request.LinkFilm != "" {
-		film.Description = request.LinkFilm
+		film.LinkFilm = request.LinkFilm
 	}
 
 	data, err := h.FilmRepository.UpdateFilm(film)

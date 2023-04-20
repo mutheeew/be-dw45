@@ -10,7 +10,7 @@ type TransactionRepository interface {
 	FindTransaction() ([]models.Transaction, error)
 	GetTransaction(ID int) (models.Transaction, error)
 	CreateTransaction(Transaction models.Transaction) (models.Transaction, error)
-	UpdateTransaction(Transaction models.Transaction) (models.Transaction, error)
+	UpdateTransaction(status string, orderId int) (models.Transaction, error)
 	DeleteTransaction(Transaction models.Transaction, ID int) (models.Transaction, error)
 }
 
@@ -38,10 +38,22 @@ func (r *repository) CreateTransaction(Transaction models.Transaction) (models.T
 	return Transaction, err
 }
 
-func (r *repository) UpdateTransaction(Transaction models.Transaction) (models.Transaction, error) {
-	err := r.db.Save(&Transaction).Error
+func (r *repository) UpdateTransaction(status string, orderId int) (models.Transaction, error) {
+	var transaction models.Transaction
+	r.db.First(&transaction, orderId)
 
-	return Transaction, err
+	// if status != transaction.Status && status == "success" {
+	// 	var user models.User
+	// 	r.db.First(&user, transaction.User.ID)
+	// 	user.Subscribe = user.Subscribe == true
+	// 	r.db.Save(&user)
+	// }
+
+	transaction.Status = status
+
+	err := r.db.Save(&transaction).Error
+
+	return transaction, err
 }
 
 func (r *repository) DeleteTransaction(Transaction models.Transaction, ID int) (models.Transaction, error) {
